@@ -19,6 +19,10 @@ public class Juego {
         this.listaCompeticion = listaCompeticion;
     }
 
+    public Juego() {
+
+    }
+
     public String getNombre() {
         return nombre;
     }
@@ -37,6 +41,22 @@ public class Juego {
 
     public Integer getIdJuego() {
         return idJuego;
+    }
+
+    public LocalDate getFechalanzamiento() {
+        return fechalanzamiento;
+    }
+
+    public void setFechalanzamiento(LocalDate fechalanzamiento) {
+        this.fechalanzamiento = fechalanzamiento;
+    }
+
+    public List<Competicion> getListaCompeticion() {
+        return listaCompeticion;
+    }
+
+    public void setListaCompeticion(List<Competicion> listaCompeticion) {
+        this.listaCompeticion = listaCompeticion;
     }
 
     public void setIdJuego(Integer idJuego) {

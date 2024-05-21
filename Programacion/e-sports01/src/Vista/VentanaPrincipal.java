@@ -21,9 +21,14 @@ public class VentanaPrincipal extends JFrame{
     private JPanel p4;
 
     private JButton bConsulta;
-    private JButton bUsuarios;
+    private JButton bPerfil;
     private JPanel panel2;
     private JLabel jlTipo;
+    private JPanel pInsertResultados;
+    private JPanel pVerResultados;
+    private JPanel pVerClasificacion;
+    private JButton bInsertResultados;
+    private JButton bVerResultados;
     private JTextField tfRelleno;
 
 
@@ -118,6 +123,45 @@ public class VentanaPrincipal extends JFrame{
         }
     }
 
+    public JPanel getpInsertResultados() {
+        return pInsertResultados;
+    }
+
+    public void setpInsertResultados(JPanel pInsertResultados) {
+        this.pInsertResultados = pInsertResultados;
+    }
+
+    public JPanel getpVerResultados() {
+        return pVerResultados;
+    }
+
+    public void setpVerResultados(JPanel pVerResultados) {
+        this.pVerResultados = pVerResultados;
+    }
+
+    public JPanel getpVerClasificacion() {
+        return pVerClasificacion;
+    }
+
+    public void setpVerClasificacion(JPanel pVerClasificacion) {
+        this.pVerClasificacion = pVerClasificacion;
+    }
+
+    public JButton getbInsertResultados() {
+        return bInsertResultados;
+    }
+
+    public void setbInsertResultados(JButton bInsertResultados) {
+        this.bInsertResultados = bInsertResultados;
+    }
+
+    public JButton getbVerResultados() {
+        return bVerResultados;
+    }
+
+    public void setbVerResultados(JButton bVerResultados) {
+        this.bVerResultados = bVerResultados;
+    }
 
     public JPanel getPanel1() {
         return panel1;
@@ -216,11 +260,11 @@ public class VentanaPrincipal extends JFrame{
     }
 
     public JButton getbPerfil() {
-        return bUsuarios;
+        return bPerfil;
     }
 
     public void setbPerfil(JButton bPerfil) {
-        this.bUsuarios = bPerfil;
+        this.bPerfil = bPerfil;
     }
 
     public JButton getbCerrarSesion() {
@@ -286,19 +330,22 @@ public class VentanaPrincipal extends JFrame{
         bCerrarInsc.addActionListener(al);
     }
 
-    public void addUsuarios(ActionListener al) {
-        bUsuarios.addActionListener(al);
+    public void addClasificacion(ActionListener al) {
+        bClasificacion.addActionListener(al);
     }
-
-
+    public void addInsertResultados(ActionListener al) {
+        bInsertResultados.addActionListener(al);
+    }
+    public void addVerResultados(ActionListener al) {
+        bVerResultados.addActionListener(al);
+    }
+    public void addPerfil(ActionListener al) {
+    }
+    public void botonPerfil(ActionListener al){
+        btPerfil.addActionListener(al);
+    }
     public void mostrarMensaje(String m){
         JOptionPane.showMessageDialog(null, m);
-    }
-    public void addBSalirAl(ActionListener al){
-    bSalir.addActionListener(al);
-    }
-    public void addCerrarSesionListener(ActionListener listenForCerrarSesion) {
-        bCerrarSesion.addActionListener(listenForCerrarSesion);
     }
 
 

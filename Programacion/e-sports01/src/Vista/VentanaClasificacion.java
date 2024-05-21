@@ -10,8 +10,6 @@ public class VentanaClasificacion extends JFrame{
     private JTextArea txaClasificacion;
     private JPanel pPrincipal;
     private JPanel panel2;
-    private JButton bVolver;
-    private JButton bInicio;
     private JLabel equipo1;
     private JLabel equipo2;
     private JLabel equipo3;
@@ -42,6 +40,9 @@ public class VentanaClasificacion extends JFrame{
     private JLabel puntos8;
     private JLabel puntos9;
     private JLabel puntos10;
+    private JButton bVolver;
+    private JButton bInicio;
+
     public VentanaClasificacion() {
         setContentPane(pPrincipal);
         setLocationRelativeTo(null);

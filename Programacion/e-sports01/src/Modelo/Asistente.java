@@ -1,9 +1,5 @@
 package Modelo;
 
-/**
- * Asitente representa al integrante del grupo que ayuda al entrenador.
- * @author Grupo4
- */
 public class Asistente {
     private Integer idAsistente;
     private String nombre;

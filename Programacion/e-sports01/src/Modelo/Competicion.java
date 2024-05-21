@@ -31,11 +31,10 @@ public class Competicion {
 
     }
 
-    public Competicion(String nombre, LocalDate fechaIni, LocalDate fechaFinal, String abierto, Juego j) {
-        this.idCompeticion = idCompeticion;
+    public Competicion(String nombre, LocalDate fechaIni, LocalDate fechaFinal, String estado, Juego juego) {
         this.nombre = nombre;
-        this.fechaInicio = fechaInicio;
-        this.fechaFin = fechaFin;
+        this.fechaInicio = fechaIni;
+        this.fechaFin = fechaFinal;
         this.estado = estado;
         this.juego = juego;
     }

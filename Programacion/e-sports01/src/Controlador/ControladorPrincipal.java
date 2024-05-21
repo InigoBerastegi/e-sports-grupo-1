@@ -31,8 +31,8 @@ public class ControladorPrincipal {
     public List<Equipo> llenarEquipos() throws Exception {
         return cb.llenarEquipos();
     }
-    public void crearJugador(String nombre, String primerApellido, String segundoApellido, Integer sueldo, String nacionalidad, LocalDate fechaNacimiento, String nickname, String rol , String equipo) throws Exception {
-         cb.crearJugador(nombre,primerApellido,segundoApellido,sueldo,nacionalidad,fechaNacimiento,nickname,rol,equipo);
+    public Usuario crearJugador(String nombre, String primerApellido, String segundoApellido, Integer sueldo, String nacionalidad, LocalDate fechaNacimiento, String nickname, String rol , String equipo) throws Exception {
+        return cb.crearJugador(nombre,primerApellido,segundoApellido,sueldo,nacionalidad,fechaNacimiento,nickname,rol,equipo);
     }
 
     public ArrayList selectEquipo(String nombre ) throws Exception {
@@ -52,36 +52,29 @@ public class ControladorPrincipal {
     public void generarCalendario() throws Exception {
         cb.generarCalendario();
     }
-    public Usuario buscarUsuario(String user,String password) throws Exception {
-        return cb.buscarUsuario(user,password);
+    public void cerrarCompeticiones() throws Exception {
+        cb.cerrarCompeticiones();
     }
-
+    public Usuario buscarUsuario(String user) throws Exception {
+        return cb.buscarUsuario(user);
+    }
+    public List<Integer> buscarJornadas(String j) throws Exception {
+        return cb.buscarJornadas(j);
+    }
+    public List<Enfrentamiento> buscarEnfrentamientos(Integer j, Integer c) throws Exception {
+        return cb.buscarEnfrentamientos(j,c);
+    }
+    public Competicion buscarCompeticion(String c) throws Exception {
+        return cb.buscarCompeticion(c);
+    }
     public List<Juego> buscarJuegos() throws SQLException {return cb.buscarJuegos();}
     public Juego buscarJuego(String nombre) throws Exception{return  cb.buscarJuego(nombre);}
     public void insertarCompeticion(Competicion c) throws Exception{cb.insertarCompeticion(c);}
     public List<String> buscarCompeticiones() throws SQLException {return cb.buscarCompeticiones();
     }
-    public List<Jugador> llenarJugadoresNombre(String equiposelecionado) throws SQLException
-    {
-        return  cb.llenarJugadoresNombre(equiposelecionado);
+    public void asignarEquiposEnfrentamientos() throws Exception{
+        cb.asignarEquiposEnfrentamientos();
     }
 
-    public void eliminarJugador(String nombre,String equipo) throws Exception {
-       cb.eliminarJugador(nombre,equipo);
-    }
-    public Usuario crearUsuario(String nombre,String contrasena,String tipoUsuario) throws Exception {
-        cb.crearUsuario(nombre,contrasena,tipoUsuario);
-        return null;
-    }
-    public Jugador actualizarJugador(String nombre, String equipo) throws Exception {
-        cb.actualizarJugador( nombre, equipo);
-        Jugador buscarDatos = cb.actualizarJugador(nombre, equipo);
 
-        return buscarDatos;
-    }
-    public void editarJugadorConfir(String nombre,String primerApellido,String segundoApellido,double sueldo,String nacionalidad,LocalDate fechaNacimiento,String nickname,String rol,String nuevoEquipo,String nombreAntiguo,String equipoAntiguo) throws Exception {
-
-
-        cb.editarJugadorConfir(nombre, primerApellido, segundoApellido, sueldo, nacionalidad, fechaNacimiento, nickname, rol, nuevoEquipo,nombreAntiguo,equipoAntiguo);
-    }
 }

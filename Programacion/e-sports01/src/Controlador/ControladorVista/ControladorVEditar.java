@@ -13,9 +13,6 @@ import java.util.List;
 
 public class ControladorVEditar {
     private ControladorVista cv;
-    private VentanaEquipos veq;
-    private ControladorTablaEquipo ctequipo;
-    private Connection con;
     private VentanaEditar vEditar;
 
     public ControladorVEditar(ControladorVista cv) {
@@ -85,7 +82,5 @@ public class ControladorVEditar {
             vEditar.dispose();
         }
     }
-
-
 
 }

@@ -2,25 +2,22 @@ package Controlador.ControladorBD;
 
 import Controlador.ControladorPrincipal;
 
+import Controlador.ControladorVista.ControladorVJuego;
 import Modelo.*;
 
 import Modelo.Equipo;
 import Modelo.Usuario;
 
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 
 
+import java.sql.Date;
 import java.time.LocalDate;
 
-import java.util.ArrayList;
-import java.util.List;
-/**
- * ControladorBD es una clase que gestiona la conexión a la base de datos y
- * proporciona métodos para interactuar con diferentes tablas de la base de datos.
- */
+import java.time.LocalTime;
+import java.util.*;
+
 public class ControladorBD {
     private ControladorTablaAsistente ctasistente;
     private ControladorTablaClasificacion ctclasificacion;
@@ -35,11 +32,7 @@ public class ControladorBD {
     private ControladorTablaUsuario ctUsuario;
     private ControladorPrincipal cp;
     private Connection con;
-    /**
-     * Constructor que recibe un ControladorPrincipal y abre la conexión a la base de datos.
-     *
-     * @param cp Controlador principal de la aplicación.
-     */
+
     public ControladorBD(ControladorPrincipal cp) {
         abrirConexion();
         this.cp = cp;
@@ -59,16 +52,14 @@ public class ControladorBD {
     public ControladorBD() {
 
     }
-    /**
-     * Abre la conexión a la base de datos.
-     */
-    public void abrirConexion() {
+
+    /*public void abrirConexion() {
         try {
             Class.forName("oracle.jdbc.driver.OracleDriver");
 
-            String url = "jdbc:oracle:thin:@localhost:1521:XE";
-            String user = "userproyecto";
-            String passwd = "userproyecto";
+            String url = "jdbc:oracle:thin:@a8150ad3dbd3.sn.mynetname.net:33150:xe";
+            String user = "proyecto_inigo";
+            String passwd = " BryanTeAmo24!";
             con = DriverManager.getConnection(url, user, passwd);
             System.out.println("conexion abierta");
 
@@ -78,7 +69,9 @@ public class ControladorBD {
         } catch (SQLException e) {
         }
     }
-   /* public void abrirConexion() {
+
+     */
+    public void abrirConexion() {
         try {
             Class.forName("oracle.jdbc.driver.OracleDriver");
 
@@ -93,87 +86,35 @@ public class ControladorBD {
             System.out.println("conexion erronea");
         } catch (SQLException e) {
         }
-    }*/
+    }
 
 
-    /**
-     * Obtiene la cantidad de equipos.
-     *
-     * @return Número de equipos.
-     * @throws Exception Si ocurre un error en la base de datos.
-     */
+
     public Integer cantidadEquipos() throws Exception {
         return ctequipo.cantidadEquipos();
     }
-    /**
-     * Llena una lista de equipos.
-     *
-     * @return Lista de equipos.
-     * @throws Exception Si ocurre un error en la base de datos.
-     */
+
     public List<Equipo> llenarEquipos() throws Exception {
         return ctequipo.llenarEquipos();
     }
-    /**
-     * Busca un equipo por su ID.
-     *
-     * @param equipo ID del equipo.
-     * @return El equipo encontrado.
-     * @throws Exception Si ocurre un error en la base de datos.
-     */
+
     public Equipo buscarEquipo(Integer equipo) throws Exception {
         return ctequipo.buscarEquipo(equipo);
     }
-    /**
-     * Busca un patrocinador por su ID.
-     *
-     * @param idpatrocinador ID del patrocinador.
-     * @return El patrocinador encontrado.
-     * @throws Exception Si ocurre un error en la base de datos.
-     */
+
     public Patrocinador buscarPatrocinador(Integer idpatrocinador) throws Exception {
         return ctpatrocinador.buscarPatrocinador(idpatrocinador);
     }
-    /**
-     * Llena una lista de jugadores de un equipo.
-     *
-     * @param x ID del equipo.
-     * @return Lista de jugadores.
-     * @throws Exception Si ocurre un error en la base de datos.
-     */
+
     public List<Jugador> llenarJugadores(Integer x) throws Exception {
         return ctjugador.llenarJugadores(x);
     }
-    /**
-     * Llena una lista de competiciones.
-     *
-     * @return Lista de competiciones.
-     * @throws Exception Si ocurre un error en la base de datos.
-     */
+
     public List<Competicion> llenarCompeticiones() throws Exception {
         return ctcompeticion.llenarCompeticiones();
     }
-    /**
-     * Llena una lista de equipos de una competición.
-     *
-     * @param competicion ID de la competición.
-     * @return Lista de equipos.
-     * @throws Exception Si ocurre un error en la base de datos.
-     */
-    public List<Equipo> llenarEquiposCompeticion(Integer competicion) throws Exception {
-        List<String> idEquipos = new ArrayList<>();
-        idEquipos = ctclasificacion.llenarEquiposCompeticion(competicion);
-        List<Equipo> listaEquipos = new ArrayList<>();
-        for (int x = 0; x < idEquipos.size(); x++) {
-            listaEquipos = ctequipo.llenarEquiposporID(idEquipos.get(x));
-        }
-        return listaEquipos;
-    }
-    /**
-     * Genera el calendario de competiciones.
-     *
-     * @throws Exception Si ocurre un error al generar el calendario.
-     */
+
+
     public void generarCalendario() throws Exception {
         try {
             java.sql.CallableStatement stmt = con.prepareCall("{call generar_calendario}");
@@ -183,105 +124,214 @@ public class ControladorBD {
             System.out.println("Error al generar el calendario: " + ex.getMessage());
         }
     }
+    public void asignarEquiposEnfrentamientos() throws Exception {
+        List<Competicion> competiciones = obtenerCompeticiones();
 
-    public void crearJugador(String nombre, String primerApellido, String segundoApellido, Integer sueldo, String nacionalidad, LocalDate fechaNacimiento, String nickname, String rol, String equipo) throws Exception {
-        ctjugador.crearJugador(nombre, primerApellido, segundoApellido, sueldo, nacionalidad, fechaNacimiento, nickname, rol, equipo);
+        try {
+            for (Competicion competicion : competiciones) {
+                List<Equipo> equipos = obtenerEquiposCompeticion(competicion.getNombre());
 
+                int numEquipos = equipos.size();
+                int numJornadas = numEquipos - 1;
+                int numEnfrentamientosPorJornada = numEquipos / 2;
+
+                for (int jornadaIndex = 0; jornadaIndex < numJornadas; jornadaIndex++) {
+                    Jornada jornada = competicion.getListaJornada().get(jornadaIndex);
+                    List<Enfrentamiento> enfrentamientosJornada = jornada.getListaEnfrentamiento();
+
+                    for (int enfrentamientoIndex = 0; enfrentamientoIndex < numEnfrentamientosPorJornada; enfrentamientoIndex++) {
+                        int equipo1Index = (jornadaIndex + enfrentamientoIndex) % (numEquipos - 1);
+                        int equipo2Index = (numEquipos - 1 - enfrentamientoIndex + jornadaIndex) % (numEquipos - 1);
+
+                        if (enfrentamientoIndex == 0) {
+                            equipo2Index = numEquipos - 1;
+                        }
+
+                        Equipo equipo1 = equipos.get(equipo1Index);
+                        Equipo equipo2 = equipos.get(equipo2Index);
+
+                        if (equipo1.getIdEquipo() == -1 || equipo2.getIdEquipo() == -1) {
+                            continue;
+                        }
+
+                        Enfrentamiento enfrentamiento = enfrentamientosJornada.get(enfrentamientoIndex);
+                        enfrentamiento.setEquipoUno(equipo1);
+                        enfrentamiento.setEquipoDos(equipo2);
+
+                        // Actualizar el enfrentamiento en la base de datos
+                        PreparedStatement ps = con.prepareStatement("UPDATE ENFRENTAMIENTO SET ID_LOCAL = ?, ID_VISITANTE = ? WHERE ID_ENF_JOR = ?");
+                        ps.setInt(1, equipo1.getIdEquipo());
+                        ps.setInt(2, equipo2.getIdEquipo());
+                        ps.setInt(3, enfrentamiento.getIdEnfrentamiento());
+                        ps.executeUpdate();
+                        ps.close();
+                    }
+                }
+            }
+            System.out.println("Equipos asignados a enfrentamientos correctamente.");
+        } catch (SQLException ex) {
+            System.out.println("Error al asignar equipos a enfrentamientos: " + ex.getMessage());
+            throw new Exception("Error al asignar equipos a enfrentamientos", ex);
+        }
     }
-        /**
-     * Crea un nuevo jugador.
-     *
-     * @param nombre          Nombre del jugador.
-     * @param primerApellido  Primer apellido del jugador.
-     * @param segundoApellido Segundo apellido del jugador.
-     * @param sueldo          Sueldo del jugador.
-     * @param nacionalidad    Nacionalidad del jugador.
-     * @param fechaNacimiento Fecha de nacimiento del jugador.
-     * @param nickname        Nickname del jugador.
-     * @param rol             Rol del jugador.
-     * @param equipo          Equipo del jugador.
-     * @return El jugador creado.
-     * @throws Exception Si ocurre un error en la base de datos.
-     */
 
-    /**
-     * Selecciona un equipo por su nombre.
-     *
-     * @param nombre Nombre del equipo.
-     * @return Lista de equipos que coinciden con el nombre.
-     * @throws Exception Si ocurre un error en la base de datos.
-     */
+    private List<Competicion> obtenerCompeticiones() throws SQLException {
+        List<Competicion> competiciones = new ArrayList<>();
+        Statement stmt = con.createStatement();
+        ResultSet rs = stmt.executeQuery("SELECT * FROM COMPETICION");
+        while (rs.next()) {
+            Competicion competicion = new Competicion();
+            competicion.setNombre(rs.getString("NOMBRE"));
+            competicion.setFechaInicio(rs.getDate("FECHA_INICIO").toLocalDate());
+            competicion.setFechaFin(rs.getDate("FECHA_FIN").toLocalDate());
+            competicion.setEstado(rs.getString("ESTADO"));
+            competicion.setListaJornada(obtenerJornadas(rs.getInt("ID_COMPETICION")));
+            competiciones.add(competicion);
+        }
+        rs.close();
+        stmt.close();
+        return competiciones;
+    }
+
+    private List<Jornada> obtenerJornadas(int idCompeticion) throws SQLException {
+        List<Jornada> jornadas = new ArrayList<>();
+        PreparedStatement ps = con.prepareStatement("SELECT * FROM JORNADA WHERE ID_COMPETICION = ?");
+        ps.setInt(1, idCompeticion);
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            Jornada jornada = new Jornada();
+            jornada.setFechaEnfrentamiento(rs.getDate("FECHA_ENFRENTAMIENTO").toLocalDate());
+            jornada.setListaEnfrentamiento(obtenerEnfrentamientos(rs.getInt("ID_JOR_COMP")));
+            jornadas.add(jornada);
+        }
+        rs.close();
+        ps.close();
+        return jornadas;
+    }
+
+    private List<Enfrentamiento> obtenerEnfrentamientos(int idJornada) throws SQLException {
+        List<Enfrentamiento> enfrentamientos = new ArrayList<>();
+        PreparedStatement ps = con.prepareStatement("SELECT * FROM ENFRENTAMIENTO WHERE ID_JOR_COMP = ?");
+        ps.setInt(1, idJornada);
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            Enfrentamiento enfrentamiento = new Enfrentamiento();
+            enfrentamiento.setHora(rs.getTime("HORA").toLocalTime());
+            enfrentamiento.setIdEnfrentamiento(rs.getInt("ID_ENF_JOR"));
+            enfrentamientos.add(enfrentamiento);
+        }
+        rs.close();
+        ps.close();
+        return enfrentamientos;
+    }
+
+    private List<Equipo> obtenerEquiposCompeticion(String nombreCompeticion) throws SQLException {
+        List<Equipo> equipos = new ArrayList<>();
+        PreparedStatement ps = con.prepareStatement("SELECT EQUIPO.ID_EQUIPO, EQUIPO.NOMBRE FROM CLASIFICACION JOIN EQUIPO ON CLASIFICACION.ID_EQUIPO = EQUIPO.ID_EQUIPO WHERE ID_COMPETICION = (SELECT ID_COMPETICION FROM COMPETICION WHERE NOMBRE = ?)");
+        ps.setString(1, nombreCompeticion);
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            Equipo equipo = new Equipo();
+            equipo.setIdEquipo(rs.getInt("ID_EQUIPO"));
+            equipo.setNombre(rs.getString("NOMBRE"));
+            equipos.add(equipo);
+        }
+        rs.close();
+        ps.close();
+        return equipos;
+    }
+
+    private int obtenerIdEquipo(String nombreEquipo) throws SQLException {
+        int idEquipo = 0;
+        PreparedStatement ps = con.prepareStatement("SELECT ID_EQUIPO FROM EQUIPO WHERE NOMBRE = ?");
+        ps.setString(1, nombreEquipo);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            idEquipo = rs.getInt("ID_EQUIPO");
+        }
+        rs.close();
+        ps.close();
+        return idEquipo;
+    }
+
+    private int obtenerIdEnfrentamiento(LocalDate fechaJornada, String nombreCompeticion, LocalTime hora) throws SQLException {
+        int idEnfrentamiento = 0;
+        PreparedStatement ps = con.prepareStatement("SELECT ID_ENF_JOR FROM ENFRENTAMIENTO WHERE ID_JOR_COMP = (SELECT ID_JOR_COMP FROM JORNADA WHERE FECHA_ENFRENTAMIENTO = ? AND ID_COMPETICION = (SELECT ID_COMPETICION FROM COMPETICION WHERE NOMBRE = ?)) AND HORA = ?");
+        ps.setDate(1, Date.valueOf(fechaJornada));
+        ps.setString(2, nombreCompeticion);
+        ps.setTime(3, Time.valueOf(hora));
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            idEnfrentamiento = rs.getInt("ID_ENF_JOR");
+        }
+        rs.close();
+        ps.close();
+        return idEnfrentamiento;
+    }
+    public void cerrarCompeticiones() throws Exception {
+        ctcompeticion.cerrarCompeticiones();
+    }
+
+    public Usuario crearJugador(String nombre, String primerApellido, String segundoApellido, Integer sueldo, String nacionalidad, LocalDate fechaNacimiento, String nickname, String rol, String equipo) throws Exception {
+        return ctjugador.crearJugador(nombre, primerApellido, segundoApellido, sueldo, nacionalidad, fechaNacimiento, nickname, rol, equipo);
+    }
+    public Competicion buscarCompeticion(String c) throws Exception {
+        return ctcompeticion.buscarCompeticion(c);
+    }
+
     public ArrayList selectEquipo(String nombre) throws Exception {
         return ctequipo.selectEquipo(nombre);
     }
-    /**
-     * Busca un usuario por su nombre de usuario.
-     *
-     * @param user Nombre de usuario.
-     * @return El usuario encontrado.
-     * @throws Exception Si ocurre un error en la base de datos.
-     */
-    public Usuario buscarUsuario(String user,String password) throws Exception {
-        return ctUsuario.buscarUsuario(user,password);
+
+    public Usuario buscarUsuario(String user) throws Exception {
+        return ctUsuario.buscarUsuario(user);
     }
-    /**
-     * Busca todos los juegos.
-     *
-     * @return Lista de juegos.
-     * @throws SQLException Si ocurre un error en la base de datos.
-     */
+
     public List<Juego> buscarJuegos() throws SQLException {
         return ctjuego.buscarJuegos();
     }
-    /**
-     * Busca un juego por su nombre.
-     *
-     * @param nombre Nombre del juego.
-     * @return El juego encontrado.
-     * @throws Exception Si ocurre un error en la base de datos.
-     */
-    public Juego buscarJuego(String nombre) throws Exception {
-        return ctjuego.buscarJuego(nombre);
+
+    public Juego buscarJuego(String nombreJuego) throws Exception {
+        return ctjuego.buscarJuego(nombreJuego);
     }
-    /**
-     * Inserta una nueva competición.
-     *
-     * @param c Competición a insertar.
-     * @throws Exception Si ocurre un error en la base de datos.
-     */
+
     public void insertarCompeticion(Competicion c) throws Exception {
         ctcompeticion.insertarCompeticion(c);
     }
-    /**
-     * Busca todas las competiciones.
-     *
-     * @return Lista de nombres de competiciones.
-     * @throws SQLException Si ocurre un error en la base de datos.
-     */
-    public List<String> buscarCompeticiones() throws SQLException {
+    public List<Enfrentamiento> buscarEnfrentamientos(Integer idJornada, Integer idCompeticion) throws Exception {
+        List<Enfrentamiento> listaEnfrentamientos = new ArrayList<>();
+        List<String> idJorCompList = ctjornada.buscarIdJorComp(idJornada, idCompeticion);
+        listaEnfrentamientos = ctenfrentamiento.buscarEnfrentamientos(idJorCompList);
 
+        for (Enfrentamiento enf : listaEnfrentamientos) {
+            Integer idEquipoLocal = ctenfrentamiento.llenarLocal(enf.getIdEnfrentamiento());
+            Equipo equipoLocal = ctequipo.buscarEquipo(idEquipoLocal);
+            System.out.println(equipoLocal.getNombre());
+            enf.setEquipoUno(equipoLocal);
+
+            Integer idEquipoVisitante = ctenfrentamiento.llenarVisitante(enf.getIdEnfrentamiento());
+            Equipo equipoVisitante = ctequipo.buscarEquipo(idEquipoVisitante);
+            System.out.println(equipoVisitante.getNombre());
+            enf.setEquipoDos(equipoVisitante);
+        }
+
+        return listaEnfrentamientos;
+    }
+
+
+    public List<Equipo> llenarEquiposCompeticion(Integer competicion) throws Exception {
+        List<String> idEquipos = new ArrayList<>();
+        idEquipos = ctclasificacion.llenarEquiposCompeticion(competicion);
+        List<Equipo> listaEquipos = new ArrayList<>();
+        for (int x = 0; x < idEquipos.size(); x++) {
+            listaEquipos = ctequipo.llenarEquiposporID(idEquipos.get(x));
+        }
+        return listaEquipos;
+    }
+    public List<String> buscarCompeticiones() throws SQLException {
         return ctcompeticion.buscarCompeticiones();
     }
-    public List<Jugador> llenarJugadoresNombre(String equiposelecionado) throws SQLException
-    {
-        return  ctjugador.llenarJugadoresNombre(equiposelecionado);
-    }
-    public void eliminarJugador(String nombre,String equipo) throws Exception {
-         ctjugador.eliminarJugador(nombre,equipo);
-    }
-    public Usuario crearUsuario(String nombre,String contrasena,String tipoUsuario) throws Exception {
-        ctUsuario.crearUsuario(nombre,contrasena,tipoUsuario);
-        return null;
-    }
-    public Jugador actualizarJugador(String nombre, String equipo) throws Exception {
-        ctjugador.actualizarJugador( nombre, equipo);
-        Jugador buscarDatos = ctjugador.actualizarJugador(nombre, equipo);
-
-        return buscarDatos;
-    }
-    public void editarJugadorConfir(String nombre,String primerApellido,String segundoApellido,double sueldo,String nacionalidad,LocalDate fechaNacimiento,String nickname,String rol,String nuevoEquipo,String nombreAntiguo,String equipoAntiguo) throws Exception {
-
-
-        ctjugador.editarJugadorConfir(nombre, primerApellido, segundoApellido, sueldo, nacionalidad, fechaNacimiento, nickname, rol, nuevoEquipo,nombreAntiguo,equipoAntiguo);
+    public List<Integer> buscarJornadas(String j) throws Exception {
+        return ctjornada.buscarJornadas(j);
     }
 }

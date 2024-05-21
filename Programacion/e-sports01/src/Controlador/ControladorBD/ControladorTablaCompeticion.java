@@ -2,8 +2,10 @@ package Controlador.ControladorBD;
 
 import Modelo.Competicion;
 import Modelo.Equipo;
+import Modelo.Usuario;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +14,7 @@ public class ControladorTablaCompeticion {
     private ControladorTablaJuego ctj;
     private Competicion c;
     private List<Competicion> listaCompeticiones;
+    private int contadorComp;
     private List<String> listaNombreCompeticiones;
 
 
@@ -36,32 +39,48 @@ public class ControladorTablaCompeticion {
         statement.close();
         return llenarCompeticiones;
     }
-    public void insertarCompeticion(Competicion c) throws Exception{
-        try{
-            String plantilla = "INSERT INTO competicion VALUES(?,?,?,?)";
+        public void insertarCompeticion(Competicion c) throws Exception {
 
-            PreparedStatement sentencia = con.prepareStatement(plantilla);
-
-            sentencia.setString(1,c.getNombre());
-
-            // pasar de LocalDate (Modelo) a Date(BD)
-            java.sql.Date fechaInicio = java.sql.Date.valueOf(c.getFechaInicio());
-            sentencia.setDate(2,fechaInicio);
-            java.sql.Date fechaFin = java.sql.Date.valueOf(c.getFechaFin());
-            sentencia.setDate(3,fechaFin);
-            sentencia.setString(3,c.getEstado());
-            //.setString(4, );
-
-            int n = sentencia.executeUpdate();
-
-            if(n != 1){
-                throw new Exception("Error al insertar");
+            String sql = "{call competicion_pkg.crear_competicion(?, ?, ?, ?, ?)}";
+            try (CallableStatement stmt = con.prepareCall(sql)) {
+                stmt.setString(1, c.getNombre());
+                stmt.setDate(2, Date.valueOf(c.getFechaInicio()));
+                stmt.setDate(3, Date.valueOf(c.getFechaFin()));
+                stmt.setString(4, c.getEstado());
+                stmt.setInt(5, c.getJuego().getIdJuego());
+                stmt.execute();
+                System.out.println("Competición creada correctamente.");
+            } catch (SQLException ex) {
+                System.out.println("Error al crear la competición: " + ex.getMessage());
+                throw new Exception("Error al crear la competición", ex);
             }
-            sentencia.close();
         }
-        catch (SQLIntegrityConstraintViolationException ex){
-            throw new Exception("Ya hay un vuelo con ese codigo");
+
+
+    public Competicion buscarCompeticion(String nombre) throws Exception {
+        Competicion c = null;
+
+        String plantilla = "SELECT id_competicion, nombre,fecha_inicio, fecha_fin, estado FROM competicion WHERE nombre=?";
+
+        PreparedStatement buscarCompeticion = con.prepareStatement(plantilla);
+        buscarCompeticion.setString(1, nombre);
+
+        ResultSet rs = buscarCompeticion.executeQuery();
+
+        if (rs.next()) {
+            c = new Competicion();
+            c.setNombre(rs.getString("nombre"));
+            c.setIdCompeticion(rs.getInt("id_competicion"));
+            c.setFechaInicio(rs.getDate("fecha_inicio").toLocalDate());
+            c.setFechaFin(rs.getDate("fecha_fin").toLocalDate());
+            c.setEstado(rs.getString("estado"));
+        } else {
+            System.out.println("Competicion no encontrada.");
         }
+        rs.close();
+        buscarCompeticion.close();
+
+        return c;
     }
     public List<String> buscarCompeticiones() throws SQLException {
         listaNombreCompeticiones = new ArrayList<>();
@@ -77,9 +96,28 @@ public class ControladorTablaCompeticion {
         sentencia.close();
         return listaNombreCompeticiones;
     }
+    public int contarCompeticiones() throws SQLException {
+        String plantilla = "SELECT COUNT(*) AS total FROM competicion";
+        PreparedStatement sentencia = con.prepareStatement(plantilla);
+        ResultSet resultado = sentencia.executeQuery();
+        if (resultado.next()){
+            contadorComp = resultado.getInt("total");
+        }
+        sentencia.close();
+        return contadorComp;
+    }
+    public void cerrarCompeticiones() throws Exception {
+        String sql = "UPDATE competicion SET estado = 'cerrado' WHERE estado = 'abierto'";
+        try (PreparedStatement stmt = con.prepareStatement(sql)) {
+            int rowsUpdated = stmt.executeUpdate();
+            System.out.println("Competiciones abiertas cerradas: " + rowsUpdated);
+        } catch (SQLException ex) {
+            System.out.println("Error al cerrar competiciones: " + ex.getMessage());
+            throw new SQLException("Error al cerrar competiciones", ex);
+        }
+    }
 
-    /*
-    public void crearCompeticion(String nombre, Date fechaInicio, Date fechaFin, String estado, int idJuego) throws SQLException {
+    /*public void crearCompeticion(String nombre, Date fechaInicio, Date fechaFin, String estado, int idJuego) throws SQLException {
         CallableStatement cs = null;
 
         try {
@@ -134,6 +172,5 @@ public class ControladorTablaCompeticion {
                 cs.close();
             }
 }
-}
-*/
+}*/
 }

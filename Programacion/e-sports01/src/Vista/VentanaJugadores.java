@@ -22,7 +22,7 @@ public class VentanaJugadores extends JFrame {
     private JTextField tfFechaNac;
     private JTextField tfNickname;
     private JComboBox cbRol;
-    private JComboBox cbEquipoEditar;
+    private JComboBox cbEquipo;
     private JComboBox cbJugadorEliminar;
     private JPanel pEditar;
     private JLabel labelJugadorM;
@@ -46,7 +46,6 @@ public class VentanaJugadores extends JFrame {
     private JComboBox cbNuevoEquipo;
     private JButton btAceptar;
     private JComboBox cbEquipoElim;
-    private JComboBox cbEquipoNuevo;
 
     public VentanaJugadores() {
         setContentPane(pJugadores);
@@ -137,6 +136,22 @@ public class VentanaJugadores extends JFrame {
         return pJugadores;
     }
 
+    public JComboBox getCbJugadorEliminar() {
+        return cbJugadorEliminar;
+    }
+
+    public void setCbJugadorEliminar(JComboBox cbJugadorEliminar) {
+        this.cbJugadorEliminar = cbJugadorEliminar;
+    }
+
+    public JButton getBtAceptar() {
+        return btAceptar;
+    }
+
+    public void setBtAceptar(JButton btAceptar) {
+        this.btAceptar = btAceptar;
+    }
+
     public void setpJugadores(JPanel pJugadores) {
         this.pJugadores = pJugadores;
     }
@@ -206,11 +221,11 @@ public class VentanaJugadores extends JFrame {
     }
 
     public JComboBox getCbEquipo() {
-        return cbEquipoEditar;
+        return cbEquipo;
     }
 
     public void setCbEquipo(JComboBox cbEquipo) {
-        this.cbEquipoEditar = cbEquipo;
+        this.cbEquipo = cbEquipo;
     }
 
     public JComboBox getCbJugador() {
@@ -385,32 +400,8 @@ public class VentanaJugadores extends JFrame {
         return cbEquipoElim;
     }
 
-    public JComboBox getCbJugadorEliminar() {
-        return cbJugadorEliminar;
-    }
-
-    public void setCbJugadorEliminar(JComboBox cbJugadorEliminar) {
-        this.cbJugadorEliminar = cbJugadorEliminar;
-    }
-
     public void setCbEquipoElim(JComboBox cbEquipoElim) {
         this.cbEquipoElim = cbEquipoElim;
-    }
-
-    public JComboBox getCbEquipoEditar() {
-        return cbEquipoEditar;
-    }
-
-    public void setCbEquipoEditar(JComboBox cbEquipoEditar) {
-        this.cbEquipoEditar = cbEquipoEditar;
-    }
-
-    public JComboBox getCbEquipoNuevo() {
-        return cbEquipoNuevo;
-    }
-
-    public void setCbEquipoNuevo(JComboBox cbEquipoNuevo) {
-        this.cbEquipoNuevo = cbEquipoNuevo;
     }
 
     public void addrbNuevoAL(ActionListener al) {
@@ -435,7 +426,7 @@ public class VentanaJugadores extends JFrame {
         tfFechaNac.setText("");
         tfNickname.setText("");
         cbRol.setSelectedIndex(-1);
-        cbEquipoEditar.setSelectedIndex(-1);
+        cbEquipo.setSelectedIndex(-1);
         cbJugadorEliminar.setSelectedIndex(-1);
         cbEditJugadores.setSelectedIndex(-1);
         tfNuevoNombre.setText("");

@@ -1,9 +1,14 @@
 package Controlador.ControladorBD;
 
+import Controlador.ControladorBD.ControladorBD;
 import Modelo.Jugador;
+import Modelo.Usuario;
 
 import javax.swing.*;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,21 +48,21 @@ public class ControladorTablaJugador {
             Integer id_Equipo = rs.getInt("id_equipo");
             //jugador.setEquipo(cb.buscarEquipo(id_Equipo));
             listaJugadores.add(jugador);
-            
+            System.out.println(rs.getString("nombre"));
+            System.out.println(rs.getString("id_equipo"));
         }
 
         statement.close();
         return listaJugadores;
     }
 
-
-public void crearJugador(String nombre, String primerApellido, String segundoApellido, Integer sueldo, String nacionalidad, LocalDate fechaNacimiento, String nickname, String rol , String equipo) throws Exception {
+public Usuario crearJugador(String nombre, String primerApellido, String segundoApellido, Integer sueldo, String nacionalidad, LocalDate fechaNacimiento, String nickname, String rol , String equipo) throws Exception {
     System.out.println(nombre + primerApellido + segundoApellido + sueldo + nacionalidad + fechaNacimiento + nickname + rol + equipo );
 
     // Verificar si el jugador ya existe en la base de datos antes de insertarlo
     if (jugadorExiste(nombre, primerApellido, segundoApellido, fechaNacimiento)) {
         JOptionPane.showMessageDialog(null, "El jugador ya existe en la base de datos.", "Error", JOptionPane.ERROR_MESSAGE);
-
+        return null;
     }
 
     // Si el jugador no existe, proceder con la inserción
@@ -82,7 +87,7 @@ public void crearJugador(String nombre, String primerApellido, String segundoApe
     }
 
     crearJugador.close();
-
+    return null;
 }
 
 // Método para verificar si un jugador ya existe en la base de datos
@@ -103,104 +108,5 @@ private boolean jugadorExiste(String nombre, String primerApellido, String segun
     return count > 0;
 }
 
-    public List<Jugador> llenarJugadoresNombre(String equiposelecionado) throws SQLException {
-        List<Jugador> jugadores = new ArrayList<>();
-        String consulta = "SELECT j.nombre FROM JUGADOR j JOIN EQUIPO e ON j.ID_EQUIPO = e.ID_EQUIPO WHERE e.NOMBRE = ?";
-        PreparedStatement stmt = con.prepareStatement(consulta);
-        stmt.setString(1, equiposelecionado);
-        ResultSet rs = stmt.executeQuery();
-        while (rs.next()) {
-            Jugador jugador = new Jugador();
-            jugador.setNombre(rs.getString("nombre"));
-            jugadores.add(jugador);
-        }
-        rs.close();
-        stmt.close();
-        return jugadores;
-    }
-    public  void eliminarJugador(String nombre, String equipo) throws SQLException {
-        String consulta = "DELETE FROM JUGADOR WHERE NOMBRE = ? AND ID_EQUIPO = (SELECT ID_EQUIPO FROM EQUIPO WHERE NOMBRE = ?)";
-        PreparedStatement stmt = con.prepareStatement(consulta);
-        stmt.setString(1, nombre);
-        stmt.setString(2, equipo);
-        int rowsAffected = stmt.executeUpdate();
 
-        stmt.close();
-        if (rowsAffected == 0) {
-            throw new SQLException("No se encontró el jugador o el equipo especificado.");
-        }
-        else {
-            JOptionPane.showMessageDialog(null,"el usuario se ha borrado exitosamente");
-            }
-    }
-
-    public Jugador actualizarJugador(String nombre , String equipo) throws Exception {
-        Jugador jugador ;
-        String selectQuery = "SELECT J.NOMBRE, J.APELLIDO1, J.APELLIDO2, J.SUELDO, J.NACIONALIDAD, J.FECHA_NACIMIENTO, J.NICKNAME, J.ROL, E.nombre" +
-                " FROM JUGADOR J\n" +
-                " JOIN EQUIPO E ON J.ID_EQUIPO = E.ID_EQUIPO\n" +
-                " WHERE J.NOMBRE = ? AND E.NOMBRE=?\n ";
-        PreparedStatement selectStatement = con.prepareStatement(selectQuery);
-        selectStatement.setString(1, nombre);
-        selectStatement.setString(2, equipo);
-        ResultSet rs = selectStatement.executeQuery();
-
-
-
-
-        if (rs.next()) {
-            jugador = new Jugador();
-            jugador.setNombre(rs.getString("nombre"));
-            jugador.setApellido1(rs.getString("apellido1"));
-            jugador.setApellido2(rs.getString("apellido2"));
-            jugador.setSueldo((double) rs.getInt("sueldo"));
-            jugador.setNacionalidad(rs.getString("nacionalidad"));
-            jugador.setFechaNacimiento(rs.getDate("fecha_nacimiento").toLocalDate());
-            jugador.setNickname(rs.getString("nickname"));
-            jugador.setRol(rs.getString("rol"));
-            //jugador2.setEquipo(rs.getString("equipo"));
-        } else {
-            throw new Exception("No se encontró al jugador en la base de datos.");
-        }
-
-        return jugador;
-    }
-
-    public void editarJugadorConfir(String nombre,String primerApellido,String segundoApellido,double sueldo,String nacionalidad,LocalDate fechaNacimiento,String nickname,String rol,String nuevoEquipo,String nombreAntiguo,String equipoAntiguo) throws Exception {
-
-        String updateQuery = "UPDATE JUGADOR SET NOMBRE=?, APELLIDO1=?, APELLIDO2=?, SUELDO=?, NACIONALIDAD=?, FECHA_NACIMIENTO=?, NICKNAME=?, ROL=?, ID_EQUIPO=(SELECT ID_EQUIPO FROM EQUIPO WHERE NOMBRE=?) WHERE NOMBRE=? AND ID_EQUIPO=(SELECT ID_EQUIPO FROM EQUIPO WHERE NOMBRE=?)";
-
-        // Preparar la declaración SQL
-        PreparedStatement updateStatement = con.prepareStatement(updateQuery);
-
-        // Establecer los valores de los parámetros en la consulta SQL
-        updateStatement.setString(1, nombre);
-        updateStatement.setString(2, primerApellido);
-        updateStatement.setString(3, segundoApellido);
-        updateStatement.setDouble(4, sueldo);
-        updateStatement.setString(5, nacionalidad);
-        updateStatement.setDate(6, Date.valueOf(fechaNacimiento));
-        updateStatement.setString(7, nickname);
-        updateStatement.setString(8, rol);
-        updateStatement.setString(9, nuevoEquipo);
-        updateStatement.setString(10, nombreAntiguo);
-        updateStatement.setString(11, equipoAntiguo);
-
-        // Ejecutar la consulta de actualización
-
-        int filasAfectadas = updateStatement.executeUpdate();
-
-        if (filasAfectadas > 0) {
-            JOptionPane.showMessageDialog(null, "El jugador " + nombre + " ha sido editado correctamente.");
-        } else {
-            JOptionPane.showMessageDialog(null, "Error al editar el jugador.", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-
-        // Cerrar la declaración y la conexión
-        updateStatement.close();
-
-    }
-
-    }
-
-
+}

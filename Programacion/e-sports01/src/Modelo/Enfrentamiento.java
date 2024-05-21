@@ -11,6 +11,7 @@ public class Enfrentamiento {
     private Integer resultadoLocal;
     private Integer resultadoVisitante;
     private Jornada jornada;
+    private Integer idEnfJor;
 
     public Enfrentamiento(Equipo equipoUno, Equipo equipoDos, Integer idEnfrentamiento, LocalTime hora, Integer resultadoLocal, Integer resultadoVisitante, Jornada jornada) {
         this.equipoUno = equipoUno;
@@ -20,6 +21,10 @@ public class Enfrentamiento {
         this.resultadoLocal = resultadoLocal;
         this.resultadoVisitante = resultadoVisitante;
         this.jornada = jornada;
+    }
+
+    public Enfrentamiento() {
+
     }
 
     public Equipo getEquipoUno() {
@@ -38,35 +43,43 @@ public class Enfrentamiento {
         this.equipoDos = equipoDos;
     }
 
-    private Integer getIdEnfrentamiento() {
+    public Integer getIdEnfrentamiento() {
         return idEnfrentamiento;
     }
 
-    private void setIdEnfrentamiento(Integer idEnfrentamiento) {
+    public void setIdEnfrentamiento(Integer idEnfrentamiento) {
         this.idEnfrentamiento = idEnfrentamiento;
     }
 
-    private LocalTime getHora() {
+    public LocalTime getHora() {
         return hora;
     }
 
-    private void setHora(LocalTime hora) {
+    public void setHora(LocalTime hora) {
         this.hora = hora;
     }
 
-    private Integer getResultadoLocal() {
+    public Integer getIdEnfJor() {
+        return idEnfJor;
+    }
+
+    public void setIdEnfJor(Integer idEnfJor) {
+        this.idEnfJor = idEnfJor;
+    }
+
+    public Integer getResultadoLocal() {
         return resultadoLocal;
     }
 
-    private void setResultadoLocal(Integer resultadoLocal) {
+    public void setResultadoLocal(Integer resultadoLocal) {
         this.resultadoLocal = resultadoLocal;
     }
 
-    private Integer getResultadoVisitante() {
+    public Integer getResultadoVisitante() {
         return resultadoVisitante;
     }
 
-    private void setResultadoVisitante(Integer resultadoVisitante) {
+    public void setResultadoVisitante(Integer resultadoVisitante) {
         this.resultadoVisitante = resultadoVisitante;
     }
 

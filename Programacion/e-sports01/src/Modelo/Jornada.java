@@ -13,8 +13,11 @@ public class Jornada {
     public Jornada(Integer idJornada, LocalDate fechaEnfrentamiento, Competicion competicion) {
         this.idJornada = idJornada;
         this.fechaEnfrentamiento = LocalDate.parse(String.valueOf(fechaEnfrentamiento));
-        this.idJornada = Integer.valueOf(idJornada);
         this.competicion = competicion;
+    }
+
+    public Jornada() {
+
     }
 
     public LocalDate getFechaEnfrentamiento() {

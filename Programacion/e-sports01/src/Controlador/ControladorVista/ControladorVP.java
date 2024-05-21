@@ -34,22 +34,13 @@ public class ControladorVP {
             vp = new VentanaPrincipal();
             vp.setVisible(true);
             vp.addeditar(new BEditarAL());
-           vp.addUsuarios(new BusuarioAL());
+
             vp.addcerrarInsc(new BCerrarInscAL());
-
+            vp.addClasificacion(new BClasificacionAL());
+            vp.addInsertResultados(new BInsertResultadosAL());
 
 
     }
-    public class BusuarioAL implements ActionListener {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            cv.crearMostrarUsuario();
-            vp.dispose();
-        }
-    }
-
-
 
     public class BEditarAL implements ActionListener {
         @Override
@@ -78,13 +69,29 @@ public class ControladorVP {
                         throw new Exception("El número de equipos en la competición " + competicion.getNombre() + " es impar.");
                     }
                     if(par=true){
+                        cv.cerrarCompeticiones();
                         cv.generarCalendario();
+                        //cv.asignarEquiposEnfrentamientos();
                     }
                     x=x+1;
                 }
             } catch (Exception ex) {
                 vp.mostrarMensaje(ex.getMessage());
             }
+        }
+    }
+    public class BClasificacionAL implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            cv.crearMostrarClasificacion();
+            vp.dispose();
+        }
+    }
+    public class BInsertResultadosAL implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            cv.crearMostrarInsertResultados();
+            vp.dispose();
         }
     }
 
