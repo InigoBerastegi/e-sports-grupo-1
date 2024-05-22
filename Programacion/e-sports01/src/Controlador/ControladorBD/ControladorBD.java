@@ -53,7 +53,7 @@ public class ControladorBD {
 
     }
 
-    /*public void abrirConexion() {
+    public void abrirConexion() {
         try {
             Class.forName("oracle.jdbc.driver.OracleDriver");
 
@@ -70,7 +70,7 @@ public class ControladorBD {
         }
     }
 
-     */
+     /*
     public void abrirConexion() {
         try {
             Class.forName("oracle.jdbc.driver.OracleDriver");
@@ -87,6 +87,8 @@ public class ControladorBD {
         } catch (SQLException e) {
         }
     }
+
+      */
 
 
 
